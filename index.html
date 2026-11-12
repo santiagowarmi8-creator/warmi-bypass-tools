@@ -30,12 +30,29 @@
   </main>
   <script>
     const api = 'https://warmi-bypass-auth.onrender.com';
-    document.querySelector('#login').addEventListener('submit', async (event) => {
+    const form = document.getElementById('login');
+    const userField = document.getElementById('username');
+    const passwordField = document.getElementById('password');
+    const statusField = document.getElementById('status');
+
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const body = new URLSearchParams({ username: username.value, password: password.value, mac_adress: 'web' });
-      const response = await fetch(`${api}/user/auth/`, { method: 'POST', body });
-      const result = await response.json();
-      status.textContent = result.auth ? 'Acceso correcto.' : 'Usuario o contraseña incorrectos.';
+      statusField.textContent = 'Conectando con el servidor...';
+      try {
+        const body = new URLSearchParams({
+          username: userField.value,
+          password: passwordField.value,
+          mac_adress: 'web'
+        });
+        const response = await fetch(api + '/user/auth/', { method: 'POST', body });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const result = await response.json();
+        statusField.textContent = result.auth
+          ? 'Acceso correcto.'
+          : 'Usuario o contraseña incorrectos.';
+      } catch (error) {
+        statusField.textContent = 'El servidor todavía no está disponible. Inténtalo cuando Render termine el despliegue.';
+      }
     });
   </script>
 </body>
